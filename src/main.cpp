@@ -49,7 +49,7 @@ void Username() {
   uid_t uid = getuid();
 
   struct passwd *pw = getpwuid(uid);
-  cout << "User:" << pw->pw_name;
+  cout << "User:" << pw->pw_name << "\n";
 }
 
 // which distro you use only work if you use linux
@@ -127,7 +127,6 @@ int main() {
   Osname();
   Host();
   Username();
-  Hostname();
   Shell();
   Kernel_version();
   Uptime();
