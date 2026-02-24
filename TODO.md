@@ -6,5 +6,5 @@
 - Osname x
 - Kernel
 - Uptime x
-- Shell
+- Shell x
 - Disk

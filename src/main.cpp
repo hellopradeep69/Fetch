@@ -1,12 +1,15 @@
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <linux/sysinfo.h>
 #include <pwd.h>
 #include <stdlib.h>
 #include <string>
+#include <sys/statvfs.h>
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -19,7 +22,7 @@ void Hostname() {
   bool host_check = gethostname(hostname, sizeof(hostname));
 
   if (host_check == 0) {
-    cout << hostname;
+    cout << hostname << "\n";
   } else {
     cout << "localhost";
   }
@@ -36,7 +39,7 @@ void Host() {
   while (getline(File, Host_info)) {
     if (Host_info.find("E:ID_MODEL") == 0) {
       string model = Host_info.substr(11);
-      cout << model << "\n";
+      cout << "Host:" << model << "\n";
     }
   }
   File.close();
@@ -47,7 +50,7 @@ void Username() {
   uid_t uid = getuid();
 
   struct passwd *pw = getpwuid(uid);
-  cout << pw->pw_name;
+  cout << "User:" << pw->pw_name;
 }
 
 // which distro you use only work if you use linux
@@ -60,7 +63,7 @@ void Osname() {
     if (Os_name.find("PRETTY") == 0) {
       Os_name.erase(Os_name.length() - 1);
       string distro = Os_name.substr(13);
-      cout << distro + "\n";
+      cout << "Os: " << distro + "\n";
     }
   }
   Os_file.close();
@@ -69,15 +72,11 @@ void Osname() {
 // TODO: Kernel need some setup
 // only needed the kernel version that is like in third word
 void Kernel_version() {
-  string Kernel_data;
   ifstream Kernel_file("/proc/version");
 
-  while (getline(Kernel_file, Kernel_data)) {
-    if (Kernel_data.find("Linux") == 0) {
-      string version = Kernel_data.substr(14);
-      cout << version;
-    }
-  }
+  string version, temp1, temp2;
+  Kernel_file >> temp1 >> temp2 >> version;
+  cout << "Kernel:" << version << "\n";
 }
 
 // https : // linuxvox.com/blog/what-api-do-i-call-to-get-the-system-uptime/
@@ -92,15 +91,47 @@ void Uptime() {
   long hours = (uptime_sec % 86400) / 3600;
   long minutes = (uptime_sec % 3600) / 60;
 
-  cout << days << " days," << hours << " hrs," << minutes << " mins";
+  cout << "Uptime:" << days << " days," << hours << " hrs," << minutes
+       << " mins";
+}
+
+void Shell() {
+  char *shell_name = getenv("SHELL");
+  char *base = strrchr(shell_name, '/');
+  cout << "Shell:" << base + 1 << "\n";
+}
+
+// TODO: do it later
+void Disk() {
+  struct statvfs fiData;
+
+  if (statvfs("/", &fiData) == 0) {
+    int total = fiData.f_bsize * fiData.f_blocks;
+    int free = fiData.f_bsize * fiData.f_bavail;
+    int used = total - free;
+    cout << used / (1024 * 1024);
+  }
+  // cout << fiData.f_bavail / (1024 * 1024);
+}
+
+void Title() {
+  uid_t uid = getuid();
+
+  struct passwd *pw = getpwuid(uid);
+  cout << pw->pw_name;
+  cout << "@";
+  Hostname();
 }
 
 int main() {
-  // Host();
-  // Username();
-  // Hostname();
-  // Osname();
-  // Kernel_version();
+  Title();
+  Osname();
+  Host();
+  Username();
+  Hostname();
+  Shell();
+  Kernel_version();
   Uptime();
+  cout << "\n";
   return 0;
 }
