@@ -13,6 +13,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#define BOLD(x) "\e[1m" x "\e[0m"
+
 using namespace std;
 
 // Get the host name using gethostname() func
@@ -38,7 +40,7 @@ void Host() {
   while (getline(File, Host_info)) {
     if (Host_info.find("E:ID_MODEL") == 0) {
       string model = Host_info.substr(11);
-      cout << "Host:" << model << "\n";
+      cout << BOLD("Host: ") << model << "\n";
     }
   }
   File.close();
@@ -49,7 +51,7 @@ void Username() {
   uid_t uid = getuid();
 
   struct passwd *pw = getpwuid(uid);
-  cout << "User:" << pw->pw_name << "\n";
+  cout << BOLD("User: ") << pw->pw_name << "\n";
 }
 
 // which distro you use only work if you use linux
@@ -62,7 +64,7 @@ void Osname() {
     if (Os_name.find("PRETTY") == 0) {
       Os_name.erase(Os_name.length() - 1);
       string distro = Os_name.substr(13);
-      cout << "Os: " << distro + "\n";
+      cout << BOLD("Os: ") << distro + "\n";
     }
   }
   Os_file.close();
@@ -75,7 +77,7 @@ void Kernel_version() {
 
   string version, temp1, temp2;
   Kernel_file >> temp1 >> temp2 >> version;
-  cout << "Kernel:" << version << "\n";
+  cout << BOLD("Kernel: ") << version << "\n";
 }
 
 // https : // linuxvox.com/blog/what-api-do-i-call-to-get-the-system-uptime/
@@ -90,14 +92,14 @@ void Uptime() {
   long hours = (uptime_sec % 86400) / 3600;
   long minutes = (uptime_sec % 3600) / 60;
 
-  cout << "Uptime:" << days << " days," << hours << " hrs," << minutes
+  cout << BOLD("Uptime: ") << days << " days," << hours << " hrs," << minutes
        << " mins";
 }
 
 void Shell() {
   char *shell_name = getenv("SHELL");
   char *base = strrchr(shell_name, '/');
-  cout << "Shell:" << base + 1 << "\n";
+  cout << BOLD("Shell: ") << base + 1 << "\n";
 }
 
 // TODO: do it later
@@ -108,7 +110,8 @@ void Disk() {
     int total = fiData.f_bsize * fiData.f_blocks;
     int free = fiData.f_bsize * fiData.f_bavail;
     int used = total - free;
-    cout << used / (1024 * 1024);
+    // cout << used / (1024 * 1024);
+    cout << (fiData.f_bavail * fiData.f_bsize);
   }
   // cout << fiData.f_bavail / (1024 * 1024);
 }
@@ -122,13 +125,17 @@ void Title() {
   Hostname();
 }
 
+void Seperator() { cout << "-----------------\n"; }
+
 int main() {
   Title();
+  Seperator();
   Osname();
   Host();
   Username();
   Shell();
   Kernel_version();
+  // Disk();
   Uptime();
   cout << "\n";
   return 0;

@@ -12,3 +12,7 @@ run: compile
 
 clean: $(TARGET)
 	rm -f $(TARGET)
+
+install: compile
+	@cp -r fetch ~/.local/bin/
+	@echo "installed fetch"
