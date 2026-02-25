@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #define BOLD(x) "\e[1m" x "\e[0m"
+#define RED(x) "\033[31m" << x << "\033[00m"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ void Hostname() {
   bool host_check = gethostname(hostname, sizeof(hostname));
 
   if (host_check == 0) {
-    cout << hostname << "\n";
+    cout << RED(hostname) << "\n";
   } else {
     cout << "localhost";
   }
@@ -110,7 +111,7 @@ void Disk() {
     int total = fiData.f_bsize * fiData.f_blocks;
     int free = fiData.f_bsize * fiData.f_bavail;
     int used = total - free;
-    // cout << used / (1024 * 1024);
+    cout << used / (1024 * 1024);
     cout << (fiData.f_bavail * fiData.f_bsize);
   }
   // cout << fiData.f_bavail / (1024 * 1024);
@@ -120,7 +121,8 @@ void Title() {
   uid_t uid = getuid();
 
   struct passwd *pw = getpwuid(uid);
-  cout << pw->pw_name;
+  string User = pw->pw_name;
+  cout << RED(User);
   cout << "@";
   Hostname();
 }
