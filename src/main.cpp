@@ -15,6 +15,7 @@
 
 #define BOLD(x) "\e[1m" x "\e[0m"
 #define RED(x) "\033[31m" << x << "\033[00m"
+#define BLUE(x) "\033[34m" << x << "\033[00m"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ void Hostname() {
   bool host_check = gethostname(hostname, sizeof(hostname));
 
   if (host_check == 0) {
-    cout << RED(hostname) << "\n";
+    cout << BLUE(hostname) << "\n";
   } else {
     cout << "localhost";
   }
@@ -122,7 +123,7 @@ void Title() {
 
   struct passwd *pw = getpwuid(uid);
   string User = pw->pw_name;
-  cout << RED(User);
+  cout << BLUE(User);
   cout << "@";
   Hostname();
 }
