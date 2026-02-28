@@ -6,7 +6,7 @@
 ----------
 - clone the repo and run make
 ```bash
-make run
+make install
 ```
 
 ### Reference
