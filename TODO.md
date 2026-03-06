@@ -4,7 +4,11 @@
 - Username x
 - Host x
 - Osname x
-- Kernel
+- Kernel x
 - Uptime x
 - Shell x
 - Disk
+- Cpu
+- Gpu
+- Memory
+- Terminal

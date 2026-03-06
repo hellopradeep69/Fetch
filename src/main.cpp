@@ -11,6 +11,7 @@
 #include <sys/statvfs.h>
 #include <sys/sysinfo.h>
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 
 #define BOLD(x) "\e[1m" x "\e[0m"
@@ -80,6 +81,7 @@ void Kernel_version() {
   string version, temp1, temp2;
   Kernel_file >> temp1 >> temp2 >> version;
   cout << BOLD("Kernel: ") << version << "\n";
+  Kernel_file.close();
 }
 
 // https : // linuxvox.com/blog/what-api-do-i-call-to-get-the-system-uptime/
@@ -118,6 +120,20 @@ void Disk() {
   // cout << fiData.f_bavail / (1024 * 1024);
 }
 
+void Cpu() {
+  string CpuInfo;
+  ifstream CpuFile("/proc/cpuinfo");
+
+  while (getline(CpuFile, CpuInfo)) {
+    if (CpuInfo.find("model name") == 0) {
+      string CpuName = CpuInfo.substr(12);
+      cout << BOLD("Cpu :") << CpuName << "\n";
+      break;
+    }
+  }
+  CpuFile.close();
+}
+
 void Title() {
   uid_t uid = getuid();
 
@@ -139,6 +155,7 @@ int main() {
   Shell();
   Kernel_version();
   // Disk();
+  Cpu();
   Uptime();
   cout << "\n";
   return 0;
