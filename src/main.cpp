@@ -18,7 +18,6 @@
 #define RED(x) "\033[31m" << x << "\033[00m"
 #define BLUE(x) "\033[34m" << x << "\033[00m"
 
-
 // Get the host name using gethostname() func
 void Hostname() {
   char hostname[HOST_NAME_MAX + 1];
@@ -95,8 +94,8 @@ void Uptime() {
   long hours = (uptime_sec % 86400) / 3600;
   long minutes = (uptime_sec % 3600) / 60;
 
-  std::cout << BOLD("Uptime: ") << days << " days," << hours << " hrs," << minutes
-       << " mins";
+  std::cout << BOLD("Uptime: ") << days << " days," << hours << " hrs,"
+            << minutes << " mins";
 }
 
 void Shell() {
@@ -117,6 +116,26 @@ void Disk() {
     std::cout << (fiData.f_bavail * fiData.f_bsize);
   }
   // std::cout << fiData.f_bavail / (1024 * 1024);
+}
+
+void Memory() {
+  // std::string MemoryInfo;
+  std::ifstream MemoryFile("/proc/meminfo");
+  std::string Key, Unit;
+  long Value;
+  long Total = 0, Available = 0;
+
+  while (MemoryFile >> Key >> Value >> Unit) {
+    if (Key == "MemTotal:") {
+      Total = Value / 1024;
+    } else if (Key == "MemAvailable:") {
+      Available = Value / 1024;
+    }
+  }
+
+  long Used = Total - Available;
+
+  std::cout << BOLD("Memory : ") << Used << " Mib / " << Total << " Mib \n";
 }
 
 void Cpu() {
@@ -153,6 +172,7 @@ int main() {
   Username();
   Shell();
   Kernel_version();
+  Memory();
   // Disk();
   Cpu();
   Uptime();
