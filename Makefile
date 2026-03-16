@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -O3  -flto -funroll-loops -fomit-frame-pointer ##-march=native -mtune=native uncomment this if u dont want portabilty but performance
 TARGET=fetch
 
 default: help
