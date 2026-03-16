@@ -18,7 +18,6 @@
 #define RED(x) "\033[31m" << x << "\033[00m"
 #define BLUE(x) "\033[34m" << x << "\033[00m"
 
-using namespace std;
 
 // Get the host name using gethostname() func
 void Hostname() {
@@ -26,9 +25,9 @@ void Hostname() {
   bool host_check = gethostname(hostname, sizeof(hostname));
 
   if (host_check == 0) {
-    cout << BLUE(hostname) << "\n";
+    std::cout << BLUE(hostname) << "\n";
   } else {
-    cout << "localhost";
+    std::cout << "localhost";
   }
 }
 
@@ -37,13 +36,13 @@ void Hostname() {
 // well seems like the file exist only for runit
 // TODO: need a if statement for systemd
 void Host() {
-  string Host_info;
-  ifstream File("/run/udev/data/+dmi:id");
+  std::string Host_info;
+  std::ifstream File("/run/udev/data/+dmi:id");
 
   while (getline(File, Host_info)) {
     if (Host_info.find("E:ID_MODEL") == 0) {
-      string model = Host_info.substr(11);
-      cout << BOLD("Host: ") << model << "\n";
+      std::string model = Host_info.substr(11);
+      std::cout << BOLD("Host: ") << model << "\n";
     }
   }
   File.close();
@@ -54,20 +53,20 @@ void Username() {
   uid_t uid = getuid();
 
   struct passwd *pw = getpwuid(uid);
-  cout << BOLD("User: ") << pw->pw_name << "\n";
+  std::cout << BOLD("User: ") << pw->pw_name << "\n";
 }
 
 // which distro you use only work if you use linux
 // This should work for all the sys so need to change anything
 void Osname() {
-  string Os_name;
-  ifstream Os_file("/etc/os-release");
+  std::string Os_name;
+  std::ifstream Os_file("/etc/os-release");
 
   while (getline(Os_file, Os_name)) {
     if (Os_name.find("PRETTY") == 0) {
       Os_name.erase(Os_name.length() - 1);
-      string distro = Os_name.substr(13);
-      cout << BOLD("Os: ") << distro + "\n";
+      std::string distro = Os_name.substr(13);
+      std::cout << BOLD("Os: ") << distro + "\n";
     }
   }
   Os_file.close();
@@ -76,11 +75,11 @@ void Osname() {
 // TODO: Kernel need some setup
 // only needed the kernel version that is like in third word
 void Kernel_version() {
-  ifstream Kernel_file("/proc/version");
+  std::ifstream Kernel_file("/proc/version");
 
-  string version, temp1, temp2;
+  std::string version, temp1, temp2;
   Kernel_file >> temp1 >> temp2 >> version;
-  cout << BOLD("Kernel: ") << version << "\n";
+  std::cout << BOLD("Kernel: ") << version << "\n";
   Kernel_file.close();
 }
 
@@ -88,7 +87,7 @@ void Kernel_version() {
 void Uptime() {
   struct sysinfo info;
   if (sysinfo(&info) == -1) {
-    cout << "duck";
+    std::cout << "duck";
   }
   long uptime_sec = info.uptime;
 
@@ -96,14 +95,14 @@ void Uptime() {
   long hours = (uptime_sec % 86400) / 3600;
   long minutes = (uptime_sec % 3600) / 60;
 
-  cout << BOLD("Uptime: ") << days << " days," << hours << " hrs," << minutes
+  std::cout << BOLD("Uptime: ") << days << " days," << hours << " hrs," << minutes
        << " mins";
 }
 
 void Shell() {
   char *shell_name = getenv("SHELL");
   char *base = strrchr(shell_name, '/');
-  cout << BOLD("Shell: ") << base + 1 << "\n";
+  std::cout << BOLD("Shell: ") << base + 1 << "\n";
 }
 
 // TODO: do it later
@@ -114,20 +113,20 @@ void Disk() {
     int total = fiData.f_bsize * fiData.f_blocks;
     int free = fiData.f_bsize * fiData.f_bavail;
     int used = total - free;
-    cout << used / (1024 * 1024);
-    cout << (fiData.f_bavail * fiData.f_bsize);
+    std::cout << used / (1024 * 1024);
+    std::cout << (fiData.f_bavail * fiData.f_bsize);
   }
-  // cout << fiData.f_bavail / (1024 * 1024);
+  // std::cout << fiData.f_bavail / (1024 * 1024);
 }
 
 void Cpu() {
-  string CpuInfo;
-  ifstream CpuFile("/proc/cpuinfo");
+  std::string CpuInfo;
+  std::ifstream CpuFile("/proc/cpuinfo");
 
   while (getline(CpuFile, CpuInfo)) {
     if (CpuInfo.find("model name") == 0) {
-      string CpuName = CpuInfo.substr(12);
-      cout << BOLD("Cpu :") << CpuName << "\n";
+      std::string CpuName = CpuInfo.substr(12);
+      std::cout << BOLD("Cpu :") << CpuName << "\n";
       break;
     }
   }
@@ -138,13 +137,13 @@ void Title() {
   uid_t uid = getuid();
 
   struct passwd *pw = getpwuid(uid);
-  string User = pw->pw_name;
-  cout << BLUE(User);
-  cout << "@";
+  std::string User = pw->pw_name;
+  std::cout << BLUE(User);
+  std::cout << "@";
   Hostname();
 }
 
-void Seperator() { cout << "-----------------\n"; }
+void Seperator() { std::cout << "-----------------\n"; }
 
 int main() {
   Title();
@@ -157,6 +156,6 @@ int main() {
   // Disk();
   Cpu();
   Uptime();
-  cout << "\n";
+  std::cout << "\n";
   return 0;
 }
