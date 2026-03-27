@@ -135,7 +135,20 @@ void Memory() {
 
   long Used = Total - Available;
 
-  std::cout << BOLD("Memory : ") << Used << " Mib / " << Total << " Mib \n";
+  std::cout << BOLD("Memory: ") << Used << " Mib / " << Total << " Mib \n";
+}
+
+void Battery() {
+  std::string BatteryStatus;
+  std::string BatteryCapacity;
+  std::ifstream CapacityFile("/sys/class/power_supply/BAT0/capacity");
+  std::ifstream StatusFile("/sys/class/power_supply/BAT0/status");
+  while (getline(CapacityFile, BatteryCapacity)) {
+    while (getline(StatusFile, BatteryStatus)) {
+      std::cout << BOLD("Battery: ") << BatteryCapacity << "% " << BatteryStatus
+                << "\n";
+    }
+  }
 }
 
 void Cpu() {
@@ -145,7 +158,7 @@ void Cpu() {
   while (getline(CpuFile, CpuInfo)) {
     if (CpuInfo.find("model name") == 0) {
       std::string CpuName = CpuInfo.substr(12);
-      std::cout << BOLD("Cpu :") << CpuName << "\n";
+      std::cout << BOLD("Cpu:") << CpuName << "\n";
       break;
     }
   }
@@ -173,7 +186,7 @@ int main() {
   Shell();
   Kernel_version();
   Memory();
-  // Disk();
+  Battery();
   Cpu();
   Uptime();
   std::cout << "\n";

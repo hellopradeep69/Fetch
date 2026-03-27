@@ -12,3 +12,4 @@
 - Gpu
 - Memory
 - Terminal
+- Battery
