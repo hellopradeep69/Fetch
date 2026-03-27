@@ -13,3 +13,4 @@ make install
 ### Reference
 ----------
 - [syfo](https://github.com/dacctal/syfo/blob/main/syfo.c)
+- [fetch](https://github.com/amark2005/akfetch)
