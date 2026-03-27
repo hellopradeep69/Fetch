@@ -34,17 +34,14 @@ void Hostname() {
 // gets the model of the sys
 // well seems like the file exist only for runit
 // TODO: need a if statement for systemd
+// use /sys/class/dmi/id/product_name
 void Host() {
   std::string Host_info;
-  std::ifstream File("/run/udev/data/+dmi:id");
+  std::ifstream HostFile("/sys/class/dmi/id/product_name");
 
-  while (getline(File, Host_info)) {
-    if (Host_info.find("E:ID_MODEL") == 0) {
-      std::string model = Host_info.substr(11);
-      std::cout << BOLD("Host: ") << model << "\n";
-    }
-  }
-  File.close();
+  (getline(HostFile, Host_info));
+  std::cout << BOLD("Host: ") << Host_info << "\n";
+  HostFile.close();
 }
 
 // Well that was simple to get username
@@ -139,16 +136,15 @@ void Memory() {
 }
 
 void Battery() {
-  std::string BatteryStatus;
-  std::string BatteryCapacity;
+  std::string BatteryStatus, BatteryCapacity;
   std::ifstream CapacityFile("/sys/class/power_supply/BAT0/capacity");
   std::ifstream StatusFile("/sys/class/power_supply/BAT0/status");
-  while (getline(CapacityFile, BatteryCapacity)) {
-    while (getline(StatusFile, BatteryStatus)) {
-      std::cout << BOLD("Battery: ") << BatteryCapacity << "% " << BatteryStatus
-                << "\n";
-    }
-  }
+  (getline(CapacityFile, BatteryCapacity));
+  (getline(StatusFile, BatteryStatus));
+  std::cout << BOLD("Battery: ") << BatteryCapacity << "% " << BatteryStatus
+            << "\n";
+  CapacityFile.close();
+  StatusFile.close();
 }
 
 void Cpu() {
