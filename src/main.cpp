@@ -8,6 +8,7 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include <string>
+#include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/sysinfo.h>
 #include <sys/types.h>
@@ -135,14 +136,29 @@ void Memory() {
   std::cout << BOLD("Memory: ") << Used << " Mib / " << Total << " Mib \n";
 }
 
+// only support BAT0 and BAT1.if in any case your system has BAT2, which is odd
+// create an issue or if possible contribute to the code.
+// https://www.geeksforgeeks.org/cpp/how-to-check-a-file-or-directory-exists-in-cpp/
 void Battery() {
+  const char *file = "/sys/class/power_supply/BAT0";
+  struct stat sb;
+  std::string CapacityPath, StatusPath;
+
+  if (stat(file, &sb) == 0) {
+    CapacityPath = "/sys/class/power_supply/BAT0/capacity";
+    StatusPath = ("/sys/class/power_supply/BAT0/status");
+  } else {
+    CapacityPath = "/sys/class/power_supply/BAT1/capacity";
+    StatusPath = ("/sys/class/power_supply/BAT1/status");
+  }
+
   std::string BatteryStatus, BatteryCapacity;
-  std::ifstream CapacityFile("/sys/class/power_supply/BAT0/capacity");
-  std::ifstream StatusFile("/sys/class/power_supply/BAT0/status");
+  std::ifstream CapacityFile(CapacityPath);
+  std::ifstream StatusFile(StatusPath);
   (getline(CapacityFile, BatteryCapacity));
   (getline(StatusFile, BatteryStatus));
-  std::cout << BOLD("Battery: ") << BatteryCapacity << "% " << BatteryStatus
-            << "\n";
+  std::cout << BOLD("Battery: ") << BatteryCapacity << "% [" << BatteryStatus
+            << "]\n";
   CapacityFile.close();
   StatusFile.close();
 }
